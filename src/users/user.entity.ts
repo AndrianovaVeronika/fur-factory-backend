@@ -1,4 +1,14 @@
-import { Entity, Column, PrimaryGeneratedColumn} from 'typeorm';
+import {
+    AfterInsert,
+    AfterRemove,
+    AfterUpdate,
+    Column,
+    Entity,
+    JoinTable,
+    ManyToMany,
+    PrimaryGeneratedColumn
+} from 'typeorm';
+import {Role} from "../roles/role.entity";
 
 @Entity()
 export class User {
@@ -8,7 +18,7 @@ export class User {
     @Column()
     name: string;
 
-    @Column()
+    @Column({unique: true})
     email: string;
 
     @Column()
@@ -18,5 +28,39 @@ export class User {
     address: string;
 
     @Column()
-    telephone: string;
+    telephone?: string;
+
+    @ManyToMany(
+        () => Role,
+        role => role.users
+    )
+    @JoinTable({
+        name: 'users_roles',
+        joinColumn: {
+            name: 'student_id',
+            referencedColumnName: 'id'
+        },
+        inverseJoinColumn: {
+            name: 'role_id',
+            referencedColumnName: 'id'
+        }
+    })
+    roles?: Role[];
+
+    // @HasMany()
+
+    @AfterInsert()
+    logInsert() {
+        console.log('inserted User with id=', this.id);
+    }
+
+    @AfterUpdate()
+    logUpdate() {
+        console.log('updated User with id=', this.id);
+    }
+
+    @AfterRemove()
+    logRemove() {
+        console.log('removed User with id=', this.id)
+    }
 }
