@@ -4,6 +4,7 @@ import {FurTypeDto} from "./dtos/fur-type.dto";
 import {FurTypesService} from "./fur-types.service";
 import {CreateFurTypeDto} from "./dtos/create-fur-type.dto";
 import {UpdateFurTypeDto} from "./dtos/update-fur-type.dto";
+import {FindFurTypeDto} from "./dtos/find-fur-type.dto";
 
 @Controller('fur-types')
 @Serialize(FurTypeDto)
@@ -23,6 +24,11 @@ export class FurTypesController {
             throw new NotFoundException('furType not found');
         }
         return furType;
+    }
+
+    @Post('/find')
+    async findFurTypes(@Body() body: FindFurTypeDto){
+        return await this.furTypesService.find(body);
     }
 
     @Post()
