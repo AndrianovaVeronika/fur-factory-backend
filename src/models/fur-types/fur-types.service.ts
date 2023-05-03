@@ -37,6 +37,6 @@ export class FurTypesService {
             throw new NotFoundException('furType not found');
         }
         //delete can be used but "remove" is more efficient with entity (hooks)
-        return this.repo.remove(furType);
+        return await this.repo.remove(furType);
     }
 }
