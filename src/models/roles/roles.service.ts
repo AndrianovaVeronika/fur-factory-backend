@@ -16,8 +16,8 @@ export class RolesService {
         return await this.repo.findOne({name});
     }
 
-    async findAll() {
-        const roles = await this.repo.find();
-        return roles.map(role => role.name);
+    findAll() {
+        return this.repo.find();
+        // return roles.map(role => role.name);
     }
 }
