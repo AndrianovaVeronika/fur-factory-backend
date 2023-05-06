@@ -7,7 +7,8 @@ import {GenderCategory} from "./gender-category.entity";
 @Module({
     imports: [TypeOrmModule.forFeature([GenderCategory])],
     controllers: [GenderCategoriesController],
-    providers: [GenderCategoriesService]
+    providers: [GenderCategoriesService],
+    exports: [GenderCategoriesService]
 })
 export class GenderCategoriesModule {
 }

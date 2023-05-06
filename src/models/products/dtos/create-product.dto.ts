@@ -1,9 +1,19 @@
-import {IsNumber, IsString} from "class-validator";
+import {IsNumber, IsString, MinLength} from "class-validator";
 
-export class Product {
+export class CreateProductDto {
     @IsString()
+    @MinLength(3)
     name: string;
 
     @IsNumber()
     price: number;
+
+    @IsNumber()
+    productTypeId: number;
+
+    @IsNumber()
+    genderCategoryId: number;
+
+    @IsNumber()
+    furTypeId: number;
 }

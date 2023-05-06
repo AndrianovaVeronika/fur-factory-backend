@@ -11,7 +11,7 @@ export class FurType {
 
     @OneToMany(
         () => Product,
-        product => product.furTypeId
+        product => product.furType
     )
     products?: Product[]
 

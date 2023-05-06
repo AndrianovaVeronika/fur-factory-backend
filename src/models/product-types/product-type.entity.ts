@@ -11,7 +11,7 @@ export class ProductType {
 
     @OneToMany(
         () => Product,
-        product => product.productTypeId
+        product => product.productType
     )
     products?: Product[]
 

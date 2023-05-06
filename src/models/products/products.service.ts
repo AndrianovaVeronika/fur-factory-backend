@@ -1,24 +1,42 @@
 import {Injectable, NotFoundException} from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
 import {Product} from "./product.entity";
-import {Repository} from "typeorm";
+import {Between, Repository} from "typeorm";
+import {FindProductDto} from "./dtos/find-product.dto";
+import {GenderCategory} from "../gender-categories/gender-category.entity";
+import {FurType} from "../fur-types/fur-type.entity";
+import {ProductType} from "../product-types/product-type.entity";
 
 @Injectable()
 export class ProductsService {
     constructor(@InjectRepository(Product) private repo: Repository<Product>) {
     }
 
-    async create(name: string, price: number) {
-        const user = this.repo.create({name, price});
-        return this.repo.save(user);
+    async create(name: string, price: number, productType: ProductType, genderCategory: GenderCategory, furType: FurType) {
+        const user = this.repo.create({name, price, productType, genderCategory, furType});
+        const createdUser = await this.repo.save(user);
+        return this.findById(createdUser.productId);
     }
 
     findById(id: number) {
-        return this.repo.findOne({productId: id});
+        return this.repo.findOne({
+            where: {productId: id},
+            relations: ['productType', 'genderCategory', 'furType']
+        });
     }
 
-    find(attrs?: Partial<Product>) {
-        return this.repo.find(attrs);
+    find(attrs?: FindProductDto) {
+        const findProductWhere = {
+            ...(attrs?.name && {name: attrs.name}),
+            ...(attrs?.priceRange && {price: Between(attrs.priceRange[0], attrs.priceRange[1])}),
+            ...(attrs?.productTypeId && {productType: {productTypeId: attrs.productTypeId}}),
+            ...(attrs?.furTypeId && {furType: {furTypeId: attrs.furTypeId}}),
+            ...(attrs?.genderCategoryId && {genderCategory: {genderCategoryId: attrs.genderCategoryId}})
+        };
+        return this.repo.find({
+            relations: ['productType', 'genderCategory', 'furType'],
+            where: findProductWhere
+        });
     }
 
     async update(id: number, attrs: Partial<Product>) {
@@ -28,7 +46,8 @@ export class ProductsService {
         }
         Object.assign(product, attrs);
         //insert or update can be used but "save" is more efficient with entity (hooks)
-        return this.repo.save(product);
+        const updatedProduct = await this.repo.save(product);
+        return this.findById(updatedProduct.productId);
     }
 
     async remove(id: number) {

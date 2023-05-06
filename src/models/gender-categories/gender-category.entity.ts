@@ -11,7 +11,7 @@ export class GenderCategory {
 
     @OneToMany(
         () => Product,
-        product => product.genderCategoryId
+        product => product.genderCategory
     )
     products?: Product[]
 

@@ -7,7 +7,8 @@ import {FurType} from "./fur-type.entity";
 @Module({
     imports: [TypeOrmModule.forFeature([FurType])],
     controllers: [FurTypesController],
-    providers: [FurTypesService]
+    providers: [FurTypesService],
+    exports: [FurTypesService]
 })
 export class FurTypesModule {
 }

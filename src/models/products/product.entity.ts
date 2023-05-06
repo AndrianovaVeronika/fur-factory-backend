@@ -35,30 +35,27 @@ export class Product {
         productType => productType.products
     )
     @JoinColumn({
-        name: 'productTypeId',
-        referencedColumnName: 'productTypeId'
+        name: 'productTypeId'
     })
-    productTypeId: number;
+    productType: ProductType;
 
     @ManyToOne(
         () => GenderCategory,
         genderCategory => genderCategory.products
     )
     @JoinColumn({
-        name: 'genderCategoryId',
-        referencedColumnName: 'genderCategoryId'
+        name: 'genderCategoryId'
     })
-    genderCategoryId: number;
+    genderCategory: GenderCategory;
 
     @ManyToOne(
         () => FurType,
         furType => furType.products
     )
     @JoinColumn({
-        name: 'furTypeId',
-        referencedColumnName: 'furTypeId'
+        name: 'furTypeId'
     })
-    furTypeId: number;
+    furType: FurType;
 
     @AfterInsert()
     logInsert() {
