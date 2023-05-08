@@ -18,7 +18,9 @@ export class CreateUserDto {
     address: string;
 
     @IsString()
-    @Matches(/[+]?[0-9]{10,12}/)
+    @Matches(/[+]?[0-9]{10,12}/, {
+        message: 'Telephone is not correct. Only "+" and "0-9" can be used'
+    })
     @IsOptional()
     telephone: string;
 }

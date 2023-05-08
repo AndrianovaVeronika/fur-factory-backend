@@ -6,7 +6,7 @@ export class ProductType {
     @PrimaryGeneratedColumn()
     productTypeId: number;
 
-    @Column()
+    @Column({unique: true})
     name: string;
 
     @OneToMany(

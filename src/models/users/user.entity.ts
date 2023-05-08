@@ -27,7 +27,7 @@ export class User {
     @Column({nullable: true})
     address: string;
 
-    @Column({nullable: true})
+    @Column({nullable: true, unique: true})
     telephone: string;
 
     @ManyToMany(() => Role, role => role.users)

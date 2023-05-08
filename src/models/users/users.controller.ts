@@ -12,7 +12,8 @@ import {RolesService} from "../roles/roles.service";
 export class UsersController {
     constructor(private usersService: UsersService,
                 private rolesService: RolesService
-    ) {}
+    ) {
+    }
 
     @Get()
     getUsers() {
@@ -37,7 +38,7 @@ export class UsersController {
     async createUser(@Body() body: CreateUserDto) {
         console.log(body)
         const roles = [await this.rolesService.findByName('user')];
-        await this.usersService.create(body.email, body.password, roles, body.name, body.telephone, body.address);
+        return await this.usersService.create(body.email, body.password, roles, body.name, body.telephone, body.address);
     }
 
     @Delete(':id')

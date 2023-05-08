@@ -1,5 +1,6 @@
 import {
-    AfterInsert, AfterRemove,
+    AfterInsert,
+    AfterRemove,
     AfterUpdate,
     Column,
     Entity,
@@ -18,7 +19,7 @@ export class Product {
     @PrimaryGeneratedColumn()
     productId: number;
 
-    @Column()
+    @Column({unique: true})
     name: string;
 
     @Column()

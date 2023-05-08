@@ -6,7 +6,7 @@ export class GenderCategory {
     @PrimaryGeneratedColumn()
     genderCategoryId: number;
 
-    @Column()
+    @Column({unique: true})
     name: string;
 
     @OneToMany(

@@ -6,7 +6,7 @@ export class FurType {
     @PrimaryGeneratedColumn()
     furTypeId: number;
 
-    @Column()
+    @Column({unique: true})
     name: string;
 
     @OneToMany(
