@@ -47,7 +47,8 @@ export class ProductsController {
 
     @Delete('/:id')
     async removeProduct(@Param('id') id: string) {
-        return (await this.productsService.remove(parseInt(id))) && id;
+        const productId = parseInt(id);
+        return (await this.productsService.remove(productId)) && productId;
     }
 
     @Patch('/:id')

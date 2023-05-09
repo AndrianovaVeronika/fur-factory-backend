@@ -13,9 +13,8 @@ export class ProductsService {
     }
 
     async create(name: string, price: number, productType: ProductType, genderCategory: GenderCategory, furType: FurType) {
-        const user = this.repo.create({name, price, productType, genderCategory, furType});
-        const createdUser = await this.repo.save(user);
-        return this.findById(createdUser.productId);
+        const user = await this.repo.create({name, price, productType, genderCategory, furType});
+        return this.repo.save(user);
     }
 
     findById(id: number) {
@@ -46,8 +45,7 @@ export class ProductsService {
         }
         Object.assign(product, attrs);
         //insert or update can be used but "save" is more efficient with entity (hooks)
-        const updatedProduct = await this.repo.save(product);
-        return this.findById(updatedProduct.productId);
+        return this.repo.save(product);
     }
 
     async remove(id: number) {
