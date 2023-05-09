@@ -15,11 +15,11 @@ export class UsersService {
     }
 
     findById(id: number) {
-        return this.repo.findOne({userId: id});
+        return this.repo.findOne({where: {userId: id}, relations: ['roles']});
     }
 
     find(attrs?: Partial<User>) {
-        return this.repo.find(attrs);
+        return this.repo.find({where: attrs, relations: ['roles']});
     }
 
     async update(id: number, attrs: Partial<User>) {

@@ -6,8 +6,10 @@ import {FindUserDto} from "./dtos/find-user.dto";
 import {Serialize} from "../../interceptors/serialize.interceptor";
 import {UserDto} from "./dtos/user.dto";
 import {RolesService} from "../roles/roles.service";
+import {UseUserInterceptor} from "../../interceptors/user.interceptor";
 
 @Controller('auth')
+@UseUserInterceptor()
 @Serialize(UserDto)
 export class UsersController {
     constructor(private usersService: UsersService,
@@ -16,7 +18,7 @@ export class UsersController {
     }
 
     @Get()
-    getUsers() {
+    getAllUsers() {
         return this.usersService.find();
     }
 
@@ -30,24 +32,25 @@ export class UsersController {
     }
 
     @Post('/find')
-    findAllUsers(@Body() body: FindUserDto) {
+    findUsers(@Body() body: FindUserDto) {
         return this.usersService.find(body);
     }
 
     @Post('/signup')
     async createUser(@Body() body: CreateUserDto) {
-        console.log(body)
         const roles = [await this.rolesService.findByName('user')];
-        return await this.usersService.create(body.email, body.password, roles, body.name, body.telephone, body.address);
+        return await this.usersService.create(body.email, body.password, roles, body.name, body.address, body.telephone);
     }
 
     @Delete(':id')
-    removeUser(@Param('id') id: string) {
-        return this.usersService.remove(parseInt(id));
+    async removeUser(@Param('id') id: string) {
+        const userId = parseInt(id);
+        return {...(await this.usersService.remove(userId)), userId};
     }
 
     @Patch('/:id')
-    updateUser(@Param('id') id: string, @Body() body: UpdateUserDto) {
-        return this.usersService.update(parseInt(id), body);
+    async updateUser(@Param('id') id: string, @Body() body: UpdateUserDto) {
+        const userId = parseInt(id);
+        return this.usersService.update(userId, body);
     }
 }
