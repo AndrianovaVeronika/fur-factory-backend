@@ -6,10 +6,8 @@ import {FindUserDto} from "./dtos/find-user.dto";
 import {Serialize} from "../../interceptors/serialize.interceptor";
 import {UserDto} from "./dtos/user.dto";
 import {RolesService} from "../roles/roles.service";
-import {UseUserInterceptor} from "../../interceptors/user.interceptor";
 
 @Controller('auth')
-@UseUserInterceptor()
 @Serialize(UserDto)
 export class UsersController {
     constructor(private usersService: UsersService,
@@ -45,7 +43,7 @@ export class UsersController {
     @Delete(':id')
     async removeUser(@Param('id') id: string) {
         const userId = parseInt(id);
-        return {...(await this.usersService.remove(userId)), userId};
+        return (await this.usersService.remove(userId)) && userId;
     }
 
     @Patch('/:id')
