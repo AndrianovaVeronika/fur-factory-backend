@@ -1,5 +1,6 @@
-import {Expose} from "class-transformer";
-import {Product} from "../../products/product.entity";
+import {Expose, Type} from "class-transformer";
+import {OrdersProductDto} from "./orders-product.dto";
+import {OrdersUserDto} from "./orders-user.dto";
 
 export class OrderDto {
     @Expose()
@@ -15,14 +16,10 @@ export class OrderDto {
     price: number;
 
     @Expose()
-    products: Product[];
+    @Type(() => OrdersProductDto)
+    products: OrdersProductDto[];
 
     @Expose()
-    user: {
-        address: string;
-        name: string;
-        email: string;
-        telephone: string;
-    }
-
+    @Type(() => OrdersUserDto)
+    user: OrdersUserDto;
 }

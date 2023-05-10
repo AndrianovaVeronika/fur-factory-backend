@@ -6,9 +6,11 @@ import {
     Entity,
     JoinTable,
     ManyToMany,
+    OneToMany,
     PrimaryGeneratedColumn
 } from 'typeorm';
 import {Role} from "../roles/role.entity";
+import {Order} from "../orders/order.entity";
 
 @Entity()
 export class User {
@@ -43,6 +45,12 @@ export class User {
         }
     })
     roles: Role[];
+
+    @OneToMany(
+        () => Order,
+        order => order.user
+    )
+    orders?: Order[];
 
     @AfterInsert()
     logInsert() {

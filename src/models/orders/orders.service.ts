@@ -3,6 +3,7 @@ import {InjectRepository} from "@nestjs/typeorm";
 import {Repository} from "typeorm";
 import {Order} from "./order.entity";
 import {Product} from "../products/product.entity";
+import {User} from "../users/user.entity";
 
 @Injectable()
 export class OrdersService {
@@ -10,21 +11,21 @@ export class OrdersService {
     }
 
     //date, shipped, userId, price
-    async create(userId: number, products: Product[]) {
+    async create(user: User, products: Product[]) {
         let price = 0;
         for (const product of products) {
             price += product.price;
         }
-        const furType = this.repo.create({userId, products, price, date: new Date()});
+        const furType = this.repo.create({user, products, price, date: new Date()});
         return this.repo.save(furType);
     }
 
     findById(id: number) {
-        return this.repo.findOne({orderId: id});
+        return this.repo.findOne({where: {orderId: id}, relations: ['products', 'user']});
     }
 
     find(attrs?: Partial<Order>) {
-        return this.repo.find(attrs);
+        return this.repo.find({where: attrs, relations: ['products', 'user']});
     }
 
     async update(id: number, attrs: Partial<Order>) {

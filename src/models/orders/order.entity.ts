@@ -4,11 +4,14 @@ import {
     AfterUpdate,
     Column,
     Entity,
+    JoinColumn,
     JoinTable,
     ManyToMany,
+    ManyToOne,
     PrimaryGeneratedColumn
 } from "typeorm";
 import {Product} from "../products/product.entity";
+import {User} from "../users/user.entity";
 
 @Entity()
 export class Order {
@@ -20,9 +23,6 @@ export class Order {
 
     @Column({default: false})
     shipped: boolean;
-
-    @Column()
-    userId: number;
 
     @Column()
     price: number;
@@ -43,6 +43,15 @@ export class Order {
         }
     })
     products?: Product[];
+
+    @ManyToOne(
+        () => User,
+        user => user.orders
+    )
+    @JoinColumn({
+        name: 'userId'
+    })
+    user: User;
 
     @AfterInsert()
     logInsert() {

@@ -15,7 +15,8 @@ import {FurTypesModule} from "../fur-types/fur-types.module";
         FurTypesModule
     ],
     controllers: [ProductsController],
-    providers: [ProductsService]
+    providers: [ProductsService],
+    exports: [ProductsService]
 })
 export class ProductsModule {
 }
