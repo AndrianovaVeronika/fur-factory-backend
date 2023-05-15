@@ -1,4 +1,4 @@
-import {Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post} from '@nestjs/common';
+import {Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Session} from '@nestjs/common';
 import {CreateUserDto} from "./dtos/create-user.dto";
 import {UpdateUserDto} from "./dtos/update-user.dto";
 import {UsersService} from "./users.service";
@@ -6,11 +6,13 @@ import {FindUserDto} from "./dtos/find-user.dto";
 import {Serialize} from "../../interceptors/serialize.interceptor";
 import {UserDto} from "./dtos/user.dto";
 import {RolesService} from "../roles/roles.service";
+import {AuthService} from "./auth.service";
 
 @Controller('auth')
 @Serialize(UserDto)
 export class UsersController {
     constructor(private usersService: UsersService,
+                private authService: AuthService,
                 private rolesService: RolesService
     ) {
     }
@@ -18,6 +20,11 @@ export class UsersController {
     @Get()
     getAllUsers() {
         return this.usersService.find();
+    }
+
+    @Get('/current')
+    getCurrentUserId(@Session() session: any) {
+        return this.usersService.findById(session.userId);
     }
 
     @Get('/:id')
@@ -34,10 +41,24 @@ export class UsersController {
         return this.usersService.find(body);
     }
 
+    @Post('/signout')
+    signOut(@Session() session: any) {
+        session.userId = null;
+    }
+
     @Post('/signup')
-    async createUser(@Body() body: CreateUserDto) {
+    async createUser(@Body() body: CreateUserDto, @Session() session: any) {
         const roles = [await this.rolesService.findByName('user')];
-        return await this.usersService.create(body.email, body.password, roles, body.name, body.address, body.telephone);
+        const user = await this.authService.signup(body.email, body.password, roles, body.name, body.address, body.telephone);
+        session.userId = user.userId;
+        return user;
+    }
+
+    @Post('/signin')
+    async signin(@Body() body: CreateUserDto, @Session() session: any) {
+        const user = await this.authService.signin(body.email, body.password);
+        session.userId = user.userId;
+        return user;
     }
 
     @Delete(':id')

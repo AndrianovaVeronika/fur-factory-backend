@@ -1,7 +1,7 @@
 import {IsEmail, IsOptional, IsString, Matches, MinLength} from "class-validator";
 
 export class CreateUserDto {
-    @IsEmail()
+    @IsEmail({}, {message: 'email signature is not correct'})
     email: string;
 
     @IsString()
