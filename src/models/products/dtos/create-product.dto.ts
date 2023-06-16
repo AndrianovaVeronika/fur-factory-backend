@@ -1,4 +1,4 @@
-import {IsNumber, IsString, MinLength} from "class-validator";
+import {IsNumber, IsOptional, IsString, MinLength} from "class-validator";
 
 export class CreateProductDto {
     @IsString()
@@ -16,4 +16,8 @@ export class CreateProductDto {
 
     @IsNumber()
     furTypeId: number;
+
+    @IsOptional()
+    @IsString()
+    imageName: string;
 }

@@ -6,18 +6,21 @@ export class FindProductDto {
     name: string;
 
     @IsArray()
+    @IsNumber({}, {each: true})
     @IsOptional()
     priceRange: [number, number];
 
-    @IsNumber()
+    @IsArray()
+    @IsNumber({}, {each: true})
     @IsOptional()
-    productTypeId: number;
+    productTypeIds: number[];
 
-    @IsNumber()
+    @IsArray()
+    @IsNumber({}, {each: true})
     @IsOptional()
-    genderCategoryId: number;
+    genderCategoryIds: number[];
 
-    @IsNumber()
+    @IsArray()
     @IsOptional()
-    furTypeId: number;
+    furTypeIds: number[];
 }

@@ -5,15 +5,14 @@ import {UsersService} from "./users.service";
 import {User} from "./user.entity";
 import {RolesModule} from "../roles/roles.module";
 import {AuthService} from "./auth.service";
-import {CurrentUserInterceptor} from "./interceptors/current-user.interceptor";
+import {AuthController} from "./auth.controller";
 
 @Module({
     imports: [TypeOrmModule.forFeature([User]), RolesModule],
-    controllers: [UsersController],
+    controllers: [UsersController, AuthController],
     providers: [
         UsersService,
-        AuthService,
-        CurrentUserInterceptor
+        AuthService
     ],
     exports: [UsersService]
 })

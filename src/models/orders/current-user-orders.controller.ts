@@ -1,56 +1,45 @@
-import {Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, UseGuards} from '@nestjs/common';
+import {
+    BadRequestException,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    NotFoundException,
+    Param,
+    Post,
+    UseGuards
+} from '@nestjs/common';
 import {OrdersService} from "./orders.service";
 import {CreateOrderDto} from "./dtos/create-order.dto";
 import {FindOrderDto} from "./dtos/find-order.dto";
 import {ProductsService} from "../products/products.service";
 import {Product} from "../products/product.entity";
 import {Serialize} from "../../interceptors/serialize.interceptor";
-import {OrderDto} from "./dtos/order.dto";
-import {UsersService} from "../users/users.service";
-import {AdminGuard} from "../../guards/admin.guard";
 import {CurrentUser} from "../users/decorators/current-user.decorator";
 import {User} from "../users/user.entity";
 import {AuthGuard} from "../../guards/auth.guard";
-import {UpdateOrderDto} from "./dtos/update-order.dto";
+import {CurrentUserOrderDto} from "./dtos/current-user-order.dto";
 
-@Controller('orders')
-@Serialize(OrderDto)
-export class OrdersController {
+@Controller('/current-user-orders')
+@UseGuards(AuthGuard)
+@Serialize(CurrentUserOrderDto)
+export class CurrentUserOrdersController {
     constructor(private ordersService: OrdersService,
-                private productsService: ProductsService,
-                private usersService: UsersService
+                private productsService: ProductsService
     ) {
     }
 
     @Get()
-    @UseGuards(AdminGuard)
-    getAllOrders() {
-        return this.ordersService.find();
-    }
-
-    @Get('/current')
-    @UseGuards(AuthGuard)
     getCurrentUserOrders(@CurrentUser() user: User) {
         return this.ordersService.find({user});
     }
 
-    @Get('/:id')
-    @UseGuards(AdminGuard)
-    async findOrder(@Param('id') id: string) {
-        const order = await this.ordersService.findById(parseInt(id));
-        if (!order) {
-            throw new NotFoundException('order not found');
-        }
-        return order;
-    }
-
     @Post('/find')
-    @UseGuards(AdminGuard)
-    findOrders(@Body() body: FindOrderDto) {
-        return this.ordersService.find(body);
+    findCurrentUserOrders(@Body() body: FindOrderDto, @CurrentUser() user: User) {
+        return this.ordersService.find({...body, user});
     }
 
-    @Post('/place')
+    @Post()
     async createOrder(@Body() body: CreateOrderDto, @CurrentUser() user: User) {
         //retrieving products
         const products: Product[] = [];
@@ -65,15 +54,15 @@ export class OrdersController {
     }
 
     @Delete(':id')
-    @UseGuards(AdminGuard)
-    async removeOrder(@Param('id') id: string) {
+    async removeOrder(@Param('id') id: string, @CurrentUser() user: User) {
         const orderId = parseInt(id);
+        const order = await this.ordersService.findById(orderId);
+        if (order.shipped) {
+            throw new BadRequestException('cannot delete shipped order');
+        }
+        if (order.user.userId != user.userId) {
+            throw new BadRequestException('order does not belong to current user');
+        }
         return (await this.ordersService.remove(orderId)) && orderId;
-    }
-
-    @Patch('/:id')
-    @UseGuards(AdminGuard)
-    updateOrder(@Param('id') id: string, @Body() body: UpdateOrderDto) {
-        return this.ordersService.update(parseInt(id), body);
     }
 }

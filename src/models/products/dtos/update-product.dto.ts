@@ -21,4 +21,8 @@ export class UpdateProductDto {
     @IsNumber()
     @IsOptional()
     furTypeId: number;
+
+    @IsString()
+    @IsOptional()
+    imageName: string;
 }

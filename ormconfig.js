@@ -16,6 +16,7 @@ switch (process.env.NODE_ENV) {
             database: process.env.DB_NAME,
             port: process.env.DB_PORT,
             entities: ['**/*.entity.js'],
+            credentials: true
             // migrationsRun: true
             // synchronize: true
         });

@@ -25,6 +25,9 @@ export class Product {
     @Column()
     price: number;
 
+    @Column({unique: true , nullable: true})
+    imageName: string;
+
     @ManyToMany(
         () => Order,
         order => order.products

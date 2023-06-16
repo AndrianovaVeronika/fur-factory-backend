@@ -1,10 +1,11 @@
-import {Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post} from '@nestjs/common';
+import {Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, UseGuards} from '@nestjs/common';
 import {Serialize} from "../../interceptors/serialize.interceptor";
 import {FurTypeDto} from "./dtos/fur-type.dto";
 import {FurTypesService} from "./fur-types.service";
 import {CreateFurTypeDto} from "./dtos/create-fur-type.dto";
 import {UpdateFurTypeDto} from "./dtos/update-fur-type.dto";
 import {FindFurTypeDto} from "./dtos/find-fur-type.dto";
+import {AdminGuard} from "../../guards/admin.guard";
 
 @Controller('fur-types')
 @Serialize(FurTypeDto)
@@ -27,21 +28,24 @@ export class FurTypesController {
     }
 
     @Post('/find')
-    async findFurTypes(@Body() body: FindFurTypeDto){
+    async findFurTypes(@Body() body: FindFurTypeDto) {
         return await this.furTypesService.find(body);
     }
 
     @Post()
+    @UseGuards(AdminGuard)
     async createFurType(@Body() body: CreateFurTypeDto) {
         return await this.furTypesService.create(body.name);
     }
 
     @Delete('/:id')
+    @UseGuards(AdminGuard)
     async removeFurType(@Param('id') id: string) {
         return (await this.furTypesService.remove(parseInt(id))) && id;
     }
 
     @Patch('/:id')
+    @UseGuards(AdminGuard)
     async updateFurType(@Param('id') id: string, @Body() body: UpdateFurTypeDto) {
         return await this.furTypesService.update(parseInt(id), body);
     }

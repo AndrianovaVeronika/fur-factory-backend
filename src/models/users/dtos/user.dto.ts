@@ -18,5 +18,8 @@ export class UserDto {
 
     @Transform(({obj}) => obj.roles.map(role => role.name))
     @Expose()
-    roles: string[]
+    roles: string[];
+
+    @Expose()
+    accessToken: string;
 }

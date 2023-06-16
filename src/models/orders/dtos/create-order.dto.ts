@@ -1,6 +1,7 @@
-import {IsArray, IsNumber} from "class-validator";
+import {IsArray, IsNumber, IsOptional} from "class-validator";
 
 export class CreateOrderDto {
+    @IsOptional()
     @IsNumber()
     userId: number;
 

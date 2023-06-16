@@ -1,6 +1,6 @@
 import {Injectable, NotFoundException} from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
-import {Repository} from "typeorm";
+import {Like, Repository} from "typeorm";
 import {GenderCategory} from "./gender-category.entity";
 
 @Injectable()
@@ -18,7 +18,9 @@ export class GenderCategoriesService {
     }
 
     find(attrs?: Partial<GenderCategory>) {
-        return this.repo.find(attrs);
+        return this.repo.find({
+            ...(attrs?.name && {name: Like(`%${attrs.name}%`)})
+        });
     }
 
     async update(id: number, attrs: Partial<GenderCategory>) {

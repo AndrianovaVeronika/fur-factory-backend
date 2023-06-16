@@ -1,32 +1,18 @@
-import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    NotFoundException,
-    Param,
-    Patch,
-    Post,
-    Session,
-    UseGuards,
-    UseInterceptors
-} from '@nestjs/common';
-import {CreateUserDto} from "./dtos/create-user.dto";
+import {Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, UseGuards} from '@nestjs/common';
 import {UpdateUserDto} from "./dtos/update-user.dto";
 import {UsersService} from "./users.service";
 import {FindUserDto} from "./dtos/find-user.dto";
 import {Serialize} from "../../interceptors/serialize.interceptor";
 import {UserDto} from "./dtos/user.dto";
-import {RolesService} from "../roles/roles.service";
+import {AdminGuard} from "../../guards/admin.guard";
+import {CreateUserDto} from "./dtos/create-user.dto";
 import {AuthService} from "./auth.service";
-import {CurrentUser} from "./decorators/current-user.decorator";
-import {User} from "./user.entity";
-import {CurrentUserInterceptor} from "./interceptors/current-user.interceptor";
-import {AuthGuard} from "../../guards/auth.guard";
+import {RolesService} from "../roles/roles.service";
+import {Role} from "../roles/role.entity";
 
-@Controller('auth')
+@Controller('users')
+@UseGuards(AdminGuard)
 @Serialize(UserDto)
-@UseInterceptors(CurrentUserInterceptor)
 export class UsersController {
     constructor(private usersService: UsersService,
                 private authService: AuthService,
@@ -37,12 +23,6 @@ export class UsersController {
     @Get()
     getAllUsers() {
         return this.usersService.find();
-    }
-
-    @Get('/current')
-    @UseGuards(AuthGuard)
-    getCurrentUser(@CurrentUser() user: User) {
-        return user;
     }
 
     @Get('/:id')
@@ -59,24 +39,19 @@ export class UsersController {
         return this.usersService.find(body);
     }
 
-    @Post('/signout')
-    signOut(@Session() session: any) {
-        session.userId = null;
-    }
+    @Post()
+    async createUser(@Body() body: CreateUserDto) {
+        const roles: Role[] = [];
+        if (body.roles) {
+            for (const role of body.roles) {
+                roles.push(await this.rolesService.findByName(role));
+            }
+        } else {
+            roles.push(await this.rolesService.findByName("user"))
+        }
 
-    @Post('/signup')
-    async createUser(@Body() body: CreateUserDto, @Session() session: any) {
-        const roles = [await this.rolesService.findByName('user')];
-        const user = await this.authService.signup(body.email, body.password, roles, body.name, body.address, body.telephone);
-        session.userId = user.userId;
-        return user;
-    }
-
-    @Post('/signin')
-    async signin(@Body() body: CreateUserDto, @Session() session: any) {
-        const user = await this.authService.signin(body.email, body.password);
-        session.userId = user.userId;
-        return user;
+        return await this.authService.signup(body.email, body.password, roles,
+            body.name, body.address, body.telephone);
     }
 
     @Delete(':id')

@@ -1,16 +1,12 @@
-import {IsArray, IsEmail, IsOptional, IsString, Matches, MinLength} from "class-validator";
+import {IsEmail, IsOptional, IsString, Matches, MinLength} from "class-validator";
 
-export class CreateUserDto {
+export class SignupUserDto {
     @IsEmail({}, {message: 'email signature is not correct'})
     email: string;
 
     @IsString()
     @MinLength(8)
     password: string;
-
-    @IsArray()
-    @IsOptional()
-    roles: string[]
 
     @IsString()
     @MinLength(3)

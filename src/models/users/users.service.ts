@@ -1,5 +1,5 @@
 import {Injectable, NotFoundException} from '@nestjs/common';
-import {Repository} from 'typeorm';
+import {Like, Repository} from 'typeorm';
 import {InjectRepository} from "@nestjs/typeorm";
 import {User} from "./user.entity";
 import {Role} from "../roles/role.entity";
@@ -10,7 +10,7 @@ export class UsersService {
     constructor(@InjectRepository(User) private repo: Repository<User>) {
     }
 
-    async create(email: string, password: string, roles: Role[], name?: string, address?: string, telephone?: string): Promise<User> {
+    async create(email: string, password: string, roles: Role[], name?: string, address?: string, telephone?: string): Promise<Partial<User>> {
         const user = this.repo.create({name, email, password, address, telephone, roles});
         return this.repo.save(user);
     }
@@ -23,7 +23,14 @@ export class UsersService {
     }
 
     find(attrs?: Partial<User>): Promise<User[]> {
-        return this.repo.find({where: attrs, relations: ['roles']});
+        return this.repo.find({
+            where: {
+                ...(attrs?.name && {name: Like(`%${attrs.name}%`)}),
+                ...(attrs?.email && {email: attrs.email}),
+                ...(attrs?.address && {address: Like(`%${attrs.address}%`)}),
+                ...(attrs?.telephone && {telephone: Like(`%${attrs.telephone}%`)}),
+            }, relations: ['roles']
+        });
     }
 
     // findOR(...attrs: Partial<User>[]): Promise<User[]> {
