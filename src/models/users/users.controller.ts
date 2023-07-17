@@ -9,6 +9,9 @@ import {CreateUserDto} from "./dtos/create-user.dto";
 import {AuthService} from "./auth.service";
 import {RolesService} from "../roles/roles.service";
 import {Role} from "../roles/role.entity";
+import {user} from '@prisma/client';
+
+//added return types for functions using user from prisma/client
 
 @Controller('users')
 @UseGuards(AdminGuard)
@@ -21,12 +24,12 @@ export class UsersController {
     }
 
     @Get()
-    getAllUsers() {
+    getAllUsers(): Promise<user[]> {
         return this.usersService.find();
     }
 
     @Get('/:id')
-    async findUser(@Param('id') id: string) {
+    async findUser(@Param('id') id: string): Promise<user> {
         const user = await this.usersService.findById(parseInt(id));
         if (!user) {
             throw new NotFoundException('user not found');
@@ -35,12 +38,12 @@ export class UsersController {
     }
 
     @Post('/find')
-    findUsers(@Body() body: FindUserDto) {
+    findUsers(@Body() body: FindUserDto): Promise<user[]> {
         return this.usersService.find(body);
     }
 
     @Post()
-    async createUser(@Body() body: CreateUserDto) {
+    async createUser(@Body() body: CreateUserDto): Promise<user> {
         const roles: Role[] = [];
         if (body.roles) {
             for (const role of body.roles) {
@@ -55,13 +58,16 @@ export class UsersController {
     }
 
     @Delete(':id')
-    async removeUser(@Param('id') id: string) {
+    async removeUser(@Param('id') id: string): Promise<number> {
         const userId = parseInt(id);
         return (await this.usersService.remove(userId)) && userId;
     }
 
     @Patch('/:id')
-    async updateUser(@Param('id') id: string, @Body() body: UpdateUserDto) {
+    async updateUser(
+        @Param('id') id: string,
+        @Body() body: UpdateUserDto
+    ): Promise<user> {
         const userId = parseInt(id);
         return this.usersService.update(userId, body);
     }

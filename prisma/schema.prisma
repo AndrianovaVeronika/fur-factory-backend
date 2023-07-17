@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+model FurType {
+  furTypeId Int       @id(map: "PK_22e3174c4f4f0af5866cd071f65") @default(autoincrement())
+  name      String    @unique(map: "UQ_6bebf3689c1df9c741739774f7d") @db.VarChar
+  products  Product[]
+
+  @@map("fur_type")
+}
+
+model GenderCategory {
+  genderCategoryId Int       @id(map: "PK_750058e6a5668846565ac205cf3") @default(autoincrement())
+  name             String    @unique(map: "UQ_eafc5e4de1175b7255e5b010dd3") @db.VarChar
+  products         Product[]
+
+  @@map("gender_category")
+}
+
+model migrations {
+  id        Int    @id(map: "PK_8c82d7f526340ab734260ea46be") @default(autoincrement())
+  timestamp BigInt
+  name      String @db.VarChar
+}
+
+model Order {
+  orderId       Int             @id(map: "PK_b075313d4d7e1c12f1a6e6359e8") @default(autoincrement())
+  date          DateTime        @db.Timestamp(6)
+  shipped       Boolean         @default(false)
+  price         Int
+  userId        Int?
+  user          User?           @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "FK_caabe91507b3379c7ba73637b84")
+  products      Product[]
+
+  @@map("order")
+}
+
+model Product {
+  productId        Int              @id(map: "PK_429540a50a9f1fbf87efd047f35") @default(autoincrement())
+  name             String           @unique(map: "UQ_22cc43e9a74d7498546e9a63e77") @db.VarChar
+  price            Int
+  imageName        String?          @unique(map: "UQ_1b7bf43742211271b73c6039c44") @db.VarChar
+  orders           Order[]
+  productTypeId    Int?
+  genderCategoryId Int?
+  furTypeId        Int?
+  productType      ProductType?    @relation(fields: [productTypeId], references: [productTypeId], onDelete: NoAction, onUpdate: NoAction, map: "FK_374bfd0d1b0e1398d7206456d98")
+  furType          FurType?        @relation(fields: [furTypeId], references: [furTypeId], onDelete: NoAction, onUpdate: NoAction, map: "FK_3bed281e24c95c8c70510a8e1f1")
+  genderCategory   GenderCategory? @relation(fields: [genderCategoryId], references: [genderCategoryId], onDelete: NoAction, onUpdate: NoAction, map: "FK_e559f1a5bf6bc560afefc278ade")
+
+  @@map("product")
+}
+
+model ProductType {
+  productTypeId Int       @id(map: "PK_c2e2e4e18ccee290f84724f603f") @default(autoincrement())
+  name          String    @unique(map: "UQ_8978484a9cee7a0c780cd259b88") @db.VarChar
+  products      Product[]
+
+  @@map("product_type")
+}
+
+model Role {
+  roleId    Int         @id(map: "PK_703705ba862c2bb45250962c9e1") @default(autoincrement())
+  name      String      @unique(map: "UQ_ae4578dcaed5adff96595e61660") @db.VarChar
+  users     User[]
+
+  @@map("role")
+}
+
+model User {
+  userId    Int         @id(map: "PK_d72ea127f30e21753c9e229891e") @default(autoincrement())
+  name      String?     @db.VarChar
+  email     String      @unique(map: "UQ_e12875dfb3b1d92d7d7c5377e22") @db.VarChar
+  password  String      @db.VarChar
+  address   String?     @db.VarChar
+  telephone String?     @unique(map: "UQ_49568c2027c8bc1f33f7878e189") @db.VarChar
+  orders    Order[]
+  roles     Role[]
+
+  @@map("user")
+}
