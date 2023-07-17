@@ -21,6 +21,18 @@ switch (process.env.NODE_ENV) {
             // synchronize: true
         });
         break;
+    case 'test':
+        Object.assign(dbConfig, {
+            type: 'postgres',
+            host: process.env.DB_HOST,
+            username: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_NAME,
+            port: process.env.DB_PORT,
+            credentials: true,
+            entities: ['**/*.entity.ts'],
+        })
+        break;
     case 'production':
         Object.assign(dbConfig, {
             type: 'postgres',

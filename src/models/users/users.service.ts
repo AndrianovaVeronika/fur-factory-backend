@@ -10,7 +10,7 @@ export class UsersService {
     constructor(@InjectRepository(User) private repo: Repository<User>) {
     }
 
-    async create(email: string, password: string, roles: Role[], name?: string, address?: string, telephone?: string): Promise<Partial<User>> {
+    async create(email: string, password: string, roles: Role[], name?: string, address?: string, telephone?: string): Promise<User> {
         const user = this.repo.create({name, email, password, address, telephone, roles});
         return this.repo.save(user);
     }

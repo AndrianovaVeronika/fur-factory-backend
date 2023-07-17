@@ -6,7 +6,6 @@ import {ProductsService} from "../products/products.service";
 import {Product} from "../products/product.entity";
 import {Serialize} from "../../interceptors/serialize.interceptor";
 import {OrderDto} from "./dtos/order.dto";
-import {UsersService} from "../users/users.service";
 import {AdminGuard} from "../../guards/admin.guard";
 import {CurrentUser} from "../users/decorators/current-user.decorator";
 import {User} from "../users/user.entity";
@@ -17,8 +16,7 @@ import {UpdateOrderDto} from "./dtos/update-order.dto";
 @Serialize(OrderDto)
 export class OrdersController {
     constructor(private ordersService: OrdersService,
-                private productsService: ProductsService,
-                private usersService: UsersService
+                private productsService: ProductsService
     ) {
     }
 

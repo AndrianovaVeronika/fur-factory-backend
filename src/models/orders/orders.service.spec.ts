@@ -1,18 +1,30 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { OrdersService } from './orders.service';
+import {Test, TestingModule} from '@nestjs/testing';
+import {OrdersService} from './orders.service';
+import {getRepositoryToken} from "@nestjs/typeorm";
+import {Repository} from "typeorm";
+import {Order} from "./order.entity";
 
 describe('OrdersService', () => {
-  let service: OrdersService;
+    let service: OrdersService;
+    let fakeOrdersRepository: Partial<Repository<Order>>
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [OrdersService],
-    }).compile();
+    beforeEach(async () => {
+        fakeOrdersRepository = {};
 
-    service = module.get<OrdersService>(OrdersService);
-  });
+        const module: TestingModule = await Test.createTestingModule({
+            providers: [
+                OrdersService,
+                {
+                    provide: getRepositoryToken(Order),
+                    useValue: fakeOrdersRepository
+                }
+            ],
+        }).compile();
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
+        service = module.get<OrdersService>(OrdersService);
+    });
+
+    it('should be defined', () => {
+        expect(service).toBeDefined();
+    });
 });

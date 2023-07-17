@@ -46,7 +46,7 @@ export class AuthController {
         return {...user, accessToken};
     }
 
-    @Delete(':id')
+    @Delete()
     @UseGuards(AuthGuard)
     async deleteAccount(@CurrentUser() user: User) {
         return (await this.usersService.remove(user.userId)) && user.userId;
